@@ -39,3 +39,30 @@ lib/
 │
 └── main.dart
 ```
+
+## Real map setup
+
+The app uses Google Maps and device location for the lost and found map.
+
+1. Create a Google Cloud project and enable **Maps SDK for Android**, **Maps SDK for iOS**, and billing.
+2. Add an Android key through the environment when running or building:
+
+```powershell
+$env:GOOGLE_MAPS_API_KEY = "your_key"
+flutter run
+```
+
+The same environment variable is used when building Android:
+
+```powershell
+$env:GOOGLE_MAPS_API_KEY = "your_key"
+flutter build apk
+```
+
+The Android manifest reads `GOOGLE_MAPS_API_KEY`. For iOS, replace
+`YOUR_GOOGLE_MAPS_API_KEY` in `ios/Runner/AppDelegate.swift` with the iOS-restricted key.
+Restrict keys by package identifier, iOS bundle identifier, and the APIs they use.
+
+The report form opens a real Egypt-centered map. Users can tap any point, use the device
+location button, and save the selected latitude and longitude with the report. Location
+permissions are requested only when the map is opened.

@@ -7,7 +7,7 @@ import 'package:errasoft/core/networking/api_service.dart';
 import 'package:errasoft/core/utils/local_storage.dart';
 import 'package:errasoft/features/auth/login/data/models/login_request_model.dart';
 import 'package:errasoft/features/auth/login/data/repo/login_repository.dart';
-import 'package:errasoft/features/auth/login/presentation/screens/login_screen.dart';
+import 'package:errasoft/features/auth/presentation/screens/landing_screen.dart';
 import 'package:errasoft/features/auth/register/home/data/models/lost_found_report.dart';
 import 'package:errasoft/features/auth/register/home/presentation/cubit/home_cubit.dart';
 import 'package:errasoft/features/auth/register/home/presentation/screens/home_screen.dart';
@@ -52,14 +52,14 @@ void main() {
     expect(await LocalStorage.instance.getToken(), isNotNull);
   });
 
-  testWidgets('shows login screen when no saved user token exists', (tester) async {
+  testWidgets('shows Returna landing screen when no saved user token exists', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await LocalStorage.init();
 
     await tester.pumpWidget(const MyApp());
     await tester.pumpAndSettle();
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.byType(LandingScreen), findsOneWidget);
   });
 
   testWidgets('shows home screen when a saved token exists', (tester) async {

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:errasoft/core/di/dependency_injection.dart';
+import 'package:errasoft/features/auth/register/presentation/cubit/register_cubit.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,9 +26,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Create account')),
-      body: SafeArea(
+    return BlocProvider.value(
+      value: getIt<RegisterCubit>(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Create account')),
+        body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: SingleChildScrollView(
@@ -68,18 +74,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Registration saved locally')),
-                    );
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  BlocConsumer<RegisterCubit, RegisterState>(
+                    listener: (context, state) {
+                      if (state is RegisterSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Account created')),
+                        );
+                        Navigator.pop(context);
+                      }
+                      if (state is RegisterError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.message)),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is RegisterLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return ElevatedButton(
+                        onPressed: () {
+                          context.read<RegisterCubit>().register(
+                            name: nameController.text.trim(),
+                            email: emailController.text.trim(),
+                            password: passwordController.text,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: const Text('Register'),
+                      );
+                    },
                   ),
-                  child: const Text('Register'),
-                ),
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -88,6 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );
